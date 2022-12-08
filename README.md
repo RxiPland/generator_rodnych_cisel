@@ -2,7 +2,7 @@
 
 - Vygeneruje wordlist úplně všech kombinací rodných čísel
 - Program uloží výsledek do rodna_cisla.txt (velikost souboru bude 9GB!)
-- Celkový počet kombinací: 726.000.000 (mužská + ženská)
+- Celkový počet kombinací (řádků): 726.000.000 (mužská + ženská)
 
 ## Ukázka prvních deseti:
 ```
