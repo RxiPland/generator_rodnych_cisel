@@ -1,2 +1,2 @@
-# generator_rodnych_cisel
+# Generátor rodných čísel
 Vygeneruje úplně všechny kombinace rodných čísel (ženské + mužské)
