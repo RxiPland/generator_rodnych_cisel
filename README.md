@@ -1,33 +1,33 @@
 # Generátor rodných čísel
 
 - Vygeneruje wordlist úplně všech kombinací rodných čísel
-- Program uloží výsledek do rodna_cisla.txt (velikost souboru bude 9GB!)
-- Celkový počet kombinací (řádků): 726.000.000 (mužská + ženská)
+- Program uloží výsledek do rodna_cisla.txt (velikost souboru bude 1GB)
+- Celkový počet kombinací (řádků): 66.000.002 (mužská + ženská)
 
 ## Ukázka prvních deseti:
 ```
-000101/0000
-000101/0001
-000101/0002
-000101/0003
-000101/0004
-000101/0005
-000101/0006
-000101/0007
-000101/0008
 000101/0009
+000101/0020
+000101/0031
+000101/0042
+000101/0053
+000101/0064
+000101/0075
+000101/0086
+000101/0097
+000101/0108
 ```
 
 ## Ukázka posledních deseti:
 ```
-996231/9990
+996231/9892
+996231/9903
+996231/9914
+996231/9925
+996231/9936
+996231/9947
+996231/9958
+996231/9969
+996231/9980
 996231/9991
-996231/9992
-996231/9993
-996231/9994
-996231/9995
-996231/9996
-996231/9997
-996231/9998
-996231/9999
 ```
