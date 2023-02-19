@@ -1,214 +1,250 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
-char rodneCislo[12]; // "xxxxxx/xxxx\0"
+// *PROMENNE*
 
-int den;
-int mesic;
-int rok;
-int poradi;
-int kontrolni;
+char rodneCislo[12]; // "RRMMDD/PPPK\0"
+// D = 1-(28/30/31)
+// M = 1-12
+// R = 00-99
+// P = 000-999
+// K = 0-9
 
-int zena;
-int konec;
-int vyhovuje=0;
-
-int count=0;
+int den, mesic, rok, poradi, kontrolni;
+int pocet=0;
 
 
-// kontrolni cislo => (devet cislic u sebe) % 11
 
-void generovat(){
+// *NASTAVENI* (1=povolit, 0=zakazat):
 
-    int celeCislo = 000000000;
+int nabidnoutNastaveni = 1; // po zakazani nebude moci uzivatel zadat nastaveni a budou pouzite hodnoty nize
 
-    celeCislo += (rok/10)*1000000000;
-    celeCislo += (rok%10)*100000000;
+int ulozitDoSouboru = 1;  // ulozit rodna cisla do souboru
+char nazevSouboru[256] = "rodna_cisla.txt"; // nazev souboru
 
-    if(zena){
-        mesic += 50;
+int muz = 1;  // generovat muzska rodna cisla
+int zena = 1; // generovat zenska rodna cisla
 
-        celeCislo += (mesic/10)*10000000;
-        celeCislo += (mesic%10)*1000000;
 
-        mesic -= 50;
+int generovat(){
+    // funkce pro zapsani hodnot do pole rodneCislo, pokud je
+    // rodne cislo validni (rozdil sudych a lichych cisel je delitelny bezezbytku 11)
+
+    int sude=0, liche=0;
+
+    liche += rok/10;
+    sude += rok%10;
+
+    if(zena && !muz){
+        liche += (mesic+50)/10;
+        sude += (mesic+50)%10;
 
     } else{
-        celeCislo += (mesic/10)*10000000;
-        celeCislo += (mesic%10)*1000000;
+        liche += mesic/10;
+        sude += mesic%10;
     }
 
-    celeCislo += (den/10)*100000;
-    celeCislo += (den%10)*10000;
+    liche += den/10;
+    sude += den%10;
+    liche += poradi/100;
+    sude += (poradi/10)%10;
+    liche += (poradi%10)%10;
+    sude += kontrolni;
 
-    celeCislo += (poradi/100)*1000;
-    celeCislo += ((poradi/10)%10)*100;
-    celeCislo += (poradi%10)*10;
+    // negace cisla pokud bude zaporne
+    int vysledek = sude-liche;
+    if(vysledek<0){
+        vysledek = -vysledek;
+    }
 
+    if((vysledek)%11==0){
 
-    while(!vyhovuje){
-        // zkouseni nahodnych kombinaci kontrolniho cisla (dokud nebude cele rodne cislo delitelne 11 beze zbytku)
+        rodneCislo[0] = 48+(rok/10);
+        rodneCislo[1] = 48+(rok%10);
 
-        celeCislo += kontrolni;
-
-
-        if(celeCislo%11 == 0){
-
-            vyhovuje = 1;
-            break;
+        if(zena && !muz){
+            rodneCislo[2] = 48+((mesic+50)/10);
+            rodneCislo[3] = 48+((mesic+50)%10);
         
         } else{
-
-            if(kontrolni+1 == 10){
-                break;
-
-            } else{
-                celeCislo -= kontrolni;
-
-                kontrolni++;
-            }
+            rodneCislo[2] = 48+(mesic/10);
+            rodneCislo[3] = 48+(mesic%10);
         }
-    }
-
-    if(vyhovuje){
-        // zapsat do pole, pokud vyhovuje
-
-        rodneCislo[0] = '0' + rok/10;
-        rodneCislo[1] = '0' + rok%10;
-
-        if(zena){
-            mesic += 50;
-
-            rodneCislo[2] = '0' + mesic/10;
-            rodneCislo[3] = '0' + mesic%10;
-
-            mesic -= 50;
-
-        } else{
-            rodneCislo[2] = '0' + mesic/10;
-            rodneCislo[3] = '0' + mesic%10;
-        }
-
-        rodneCislo[4] = '0' + den/10;
-        rodneCislo[5] = '0' + den%10;
         
-        rodneCislo[7] = '0' + poradi/100;
-        rodneCislo[8] = '0' + (poradi/10)%10;
-        rodneCislo[9] = '0' + poradi%10;
+        rodneCislo[4] = 48+(den/10);
+        rodneCislo[5] = 48+(den%10);
+        //rodneCislo[6] = '/';
+        rodneCislo[7] = 48+(poradi/100);
+        rodneCislo[8] = 48+((poradi/10)%10);
+        rodneCislo[9] = 48+((poradi%10)%10);
+        rodneCislo[10] = 48+(kontrolni);
 
-        rodneCislo[10] = '0' + kontrolni;
-    }
+        pocet++;
 
-    // pokud nevyhovuje (else), pouze se inkrementují hodnoty - bez zápisu
-
-    if (kontrolni+1 == 10){
-        kontrolni = 0;
+        return 1;
     
-        if (poradi+1 == 1000){
-            poradi = 0;
-
-            if((den+1 == 29 && mesic==2) || (den+1 == 32 && mesic%2 == 0) || (den+1 == 31 && mesic%2 == 1)){
-                den = 1;
-
-                if(mesic+1 == 13){
-                    mesic = 1;
-
-                    if(rok+1 == 100){
-
-                        // ukončit while
-                        konec = 1;
-
-                    } else{
-                        rok++;
-                    }
-
-                } else{
-                    mesic++;
-                }
-
-            } else{
-                den++;
-            }
-
-        } else{
-            poradi++;
-        }
-
     } else{
-        kontrolni++;
+        return 0;
     }
 }
 
 int main(){
 
-    int zacatek = time(0);
+    FILE *f;
+    int validni;
+    char vstup[256];
+
+    printf("*** Generator rodnych cisel ***\n\n");
+
+    if(nabidnoutNastaveni){
+
+        printf("Nastaveni (1=ano | 0=ne):\n\n");
+        
+        printf("Chcete generovat muzska rodna cisla? ");
+        fgets(vstup, 256, stdin);
+
+        if(vstup[0] == '0'){
+            muz = 0;
+
+        } else if(vstup[0] == '1'){
+            muz = 1;
+        
+        } else{
+            printf("Spatna hodnota! Nastavuji na 1\n");
+            muz = 1;
+        }
+
+        printf("Chcete generovat zenska rodna cisla? ");
+        fgets(vstup, 256, stdin);
+
+        if(vstup[0] == '0'){
+            zena = 0;
+
+        } else if(vstup[0] == '1'){
+            zena = 1;
+        
+        } else{
+            printf("Spatna hodnota! Nastavuji na 1\n");
+            zena = 1;
+        }
+
+        printf("\nChcete vystup ulozit do souboru? ");
+        fgets(vstup, 256, stdin);
+
+        if(vstup[0] == '0'){
+            ulozitDoSouboru = 0;
+
+        } else if(vstup[0] == '1'){
+            ulozitDoSouboru = 1;
+        
+        } else{
+            printf("Spatna hodnota! Nastavuji na 0\n");
+            ulozitDoSouboru = 0;
+        }
+
+        if (ulozitDoSouboru){
+            printf("Zadejte nazev souboru (max 255 znaku): ");
+            fgets(vstup, 300, stdin);
+
+            // spocitat delku nazvu
+            int delka=0, i=0;
+            while(vstup[delka] != '\0' && vstup[delka] != '\n' && delka<=254){
+                delka++;
+            }
+            
+            if(delka==0){
+            	printf("Nazev nemuze byt prazdny! Nastavuji na rodna_cisla.txt\n");
+        		// promenna nazevSouboru s defaultnim nazvem nebude prepsana
+            	
+			} else{
+				
+                // prepsat do noveho pole
+				for(i=0; i<delka; i++){
+					nazevSouboru[i] = vstup[i];
+				}
+				nazevSouboru[i] = '\0';
+			}
+        }
+    }
+
+    // otevrit soubor
+    if (ulozitDoSouboru){
+        f = fopen(nazevSouboru, "w");
+
+        if (f == NULL){
+            return 1;
+        }
+    }
+
 
     rodneCislo[6] = '/';
-    rodneCislo[11] = '\0';
+    int zacatek = time(0); // cas zacatku
 
-    FILE *f;
-    f = fopen("rodna_cisla.txt", "w");
+    printf("\n\n");
 
-    if (f == NULL){
-        return 1;
-    }
+    if(muz || zena){
 
-    printf("Zacinam generovat muzska rodna cisla...\n");
-    // reset hodnot
+        A:
 
-    den = 01;
-    mesic = 01;
-    rok = 00;
-    poradi = 000;
-    kontrolni = 0;
+        if(muz){
+            printf("Zacinam generovat muzska rodna cisla...\n");
 
-    zena = 0;
-    konec = 0;
+        } else if (zena){
+            printf("Zacinam generovat zenska rodna cisla...\n");
+        }
 
-    while(!konec){
-        generovat();
+        if(!ulozitDoSouboru){
+            sleep(2);
+        }
 
-        if(vyhovuje){
+        // postupne inkrementovani hodnot
+        for(rok=00; rok<=99; rok++){
 
-            //printf("%s\n", rodneCislo);
-            fprintf(f, "%s\n", rodneCislo);
+            for(mesic=01; mesic<=12; mesic++){
 
-            vyhovuje = 0;
-            count++;
+                for(den=01; (den<=31 && mesic%2==0 && mesic!=02) || (den<=30 && mesic%2!=0 && mesic!=02) || (den<=28 && mesic==02); den++){
+                    
+                    for(poradi=000; poradi<=999; poradi++){
+
+                        for(kontrolni=0; kontrolni<=9; kontrolni++){
+
+                            validni = generovat();
+
+                            if(validni && ulozitDoSouboru){
+                                // zapsat do souboru
+                                fprintf(f, "%s\n", rodneCislo);
+
+                            } else if (validni){
+                                // vypsat do konzole
+                                printf("%s\n", rodneCislo);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
-    printf("Zacinam generovat zenska rodna cisla...");
-    // reset hodnot
-    den = 01;
-    mesic = 01;
-    rok = 00;
-    poradi = 000;
-    kontrolni = 0;
-
-    zena = 1;
-    konec = 0;
-
-    while(!konec){
-        generovat();
-
-        if(vyhovuje){
-
-            //printf("%s\n", rodneCislo);
-            fprintf(f, "%s\n", rodneCislo);
-
-            vyhovuje = 0;
-            count++;
+    // zopakovat proces pro zenu
+    if(muz){
+        if(zena){
+            muz = 0;
+            goto A;
         }
     }
 
-    fclose(f);
+    // zavrit soubor pokud se do nej zapisovalo
+    if(ulozitDoSouboru){
+        fclose(f);
+    }
 
     printf("\n--------------------------------------------\n");
     printf("\nGenerace dokoncena.\nDoba trvani: %dsec\n", time(0)-zacatek);
-    printf("Pocet rodnych cisel: %d\n", count);
+    printf("Pocet rodnych cisel: %d\n\n", pocet);
 
     system("pause");
+
     return 0;
 }
