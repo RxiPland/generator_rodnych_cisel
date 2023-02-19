@@ -1,8 +1,16 @@
 # Generátor rodných čísel
 
-- Vygeneruje wordlist úplně všech validních kombinací rodných čísel
-- Program uloží výsledek do rodna_cisla.txt (velikost souboru bude 1GB)
-- Celkový počet kombinací (řádků): ```66.000.002``` (mužská + ženská)
+- Generátor všech validních kombinací [rodných čísel](https://cs.wikipedia.org/wiki/Rodn%C3%A9_%C4%8D%C3%ADslo)
+- Výsledek lze uložit do souboru
+- Celkový počet kombinací (řádků): ```65.999.999``` (mužská + ženská)
+<br><br/>
+- [Stáhnout program](https://github.com/RxiPland/generator_rodnych_cisel/releases/download/v1.0.0/generator_rodna_cisla.exe) (win64)  ```md5: cf9294a4153729c52b3fb0fa218bf43f```
+<br></br>
+
+# Náhled:
+![1](https://user-images.githubusercontent.com/82058894/219910058-8a64d70b-b8f8-40a0-aefd-61fa51f32efc.png)
+
+<br></br>
 
 ## Ukázka prvních deseti:
 ```
@@ -20,14 +28,14 @@
 
 ## Ukázka posledních deseti:
 ```
-996231/9892
-996231/9903
-996231/9914
-996231/9925
-996231/9936
-996231/9947
-996231/9958
-996231/9969
-996231/9980
-996231/9991
+996231/9895
+996231/9906
+996231/9917
+996231/9928
+996231/9939
+996231/9950
+996231/9961
+996231/9972
+996231/9983
+996231/9994
 ```
